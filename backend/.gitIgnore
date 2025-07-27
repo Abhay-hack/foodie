@@ -1,0 +1,34 @@
+# Logs
+logs/           # Add a slash to ensure it targets the directory
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Node modules and build outputs
+node_modules/
+dist/
+dist-ssr/       # Common for Vite SSR, might not be needed for pure backend
+.env            # Ignore all .env files (secure credentials)
+package.json
+package-lock.json
+
+# Firebase Admin SDK Key (NEW)
+config/firebase-admin-key.json # Assuming your key is in backend/config/
+
+# Editor directories and files
+.vscode/
+!.vscode/extensions.json # Don't ignore extensions.json if you want to share recommended extensions
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Common IDE temporary files
+*.tmp
+*.temp
