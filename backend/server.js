@@ -12,11 +12,28 @@ connectDB(); // 🔌 Connect MongoDB
 
 const app = express();
 
+const allowedOrigins = [
+  'http://localhost:5173', // Your local frontend development server
+  'https://quickserve-frontend.vercel.app', // REPLACE WITH YOUR ACTUAL VERCELL FRONTEND URL
+  // OR if deployed on Render: 'https://quickserve-frontend.onrender.com', // REPLACE WITH YOUR ACTUAL RENDER FRONTEND URL
+  // Add more origins if you have them, e.g., 'https://www.yourdomain.com'
+];
+
 // Middleware
 app.use(cookieParser());
 app.use(cors({
-  origin: 'http://localhost:5173',
-  credentials: true, // allow cookies, headers, etc.
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    // or if the origin is in our allowed list.
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true, // This is important for sending/receiving cookies (like JWT)
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Explicitly allow methods your API uses
+  optionsSuccessStatus: 204 // For preflight requests
 }));
 
 // ADD THESE TWO LINES TO PARSE REQUEST BODIES
