@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+/* src/index.css */
+
+/* Hide the default cursor for the entire body */
+body {
+  cursor: none;
+}
+
+/* Re-enable default cursor for interactive elements */
+a,
+button,
+input,
+textarea,
+[role="button"] {
+  cursor: pointer !important;
+}
+
+/* Define the sparkle animation */
+@keyframes sparkle {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5); /* Shrinks as it fades */
+  }
+}
+
+.animate-sparkle {
+  animation-name: sparkle;
+  animation-timing-function: ease-out; /* Smooth fade */
+}
+
+/* If you used 'animate-pulse-slow' in Navbar, add its keyframes here too: */
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
