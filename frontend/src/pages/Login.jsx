@@ -7,6 +7,8 @@ import { signInWithRedirect,signInWithPopup, getRedirectResult } from "firebase/
 import { auth, provider } from "../firebase";
 import { motion } from "framer-motion";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 const Login = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -19,7 +21,7 @@ const Login = () => {
     e.preventDefault();
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/auth/login",
+        `${API_BASE_URL}/api/auth/login`,
         formData,
         { withCredentials: true } // include HttpOnly cookie
       );
@@ -45,7 +47,7 @@ const Login = () => {
 
     // Send token to backend
     const res = await axios.post(
-      "http://localhost:5000/api/auth/google-auth",
+      `${API_BASE_URL}/api/auth/google-auth`,
       { idToken },
       { withCredentials: true } // important for cookies
     );
@@ -69,7 +71,7 @@ const Login = () => {
           console.log("Firebase ID Token:", idToken);
 
           const res = await axios.post(
-            "http://localhost:5000/api/auth/google-auth",
+            `${API_BASE_URL}/api/auth/google-auth`,
             { idToken }, // <-- send ID token, not user data
             { withCredentials: true }
           );

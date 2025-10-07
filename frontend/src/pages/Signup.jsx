@@ -7,6 +7,8 @@ import { getRedirectResult, signInWithRedirect } from "firebase/auth";
 import { auth, provider } from "../firebase";
 import { motion } from "framer-motion";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 const Signup = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -24,7 +26,7 @@ const Signup = () => {
     e.preventDefault();
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/auth/signup",
+        `${API_BASE_URL}/api/auth/signup`,
         formData,
         { withCredentials: true } // include HttpOnly cookie
       );
@@ -53,7 +55,7 @@ const Signup = () => {
         if (result && result.user) {
           const user = result.user;
           const res = await axios.post(
-            "http://localhost:5000/api/auth/signup",
+            `${API_BASE_URL}/api/auth/signup`,
             {
               name: user.displayName,
               email: user.email,

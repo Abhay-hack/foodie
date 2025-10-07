@@ -3,6 +3,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaBars, FaTimes, FaSearch, FaUserCircle } from "react-icons/fa";
 import { motion } from "framer-motion";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 const Navbar = () => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
@@ -24,7 +26,7 @@ const Navbar = () => {
   useEffect(() => {
   const fetchProfile = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/auth/profile", {
+        const res = await fetch(`${API_BASE_URL}/api/auth/profile`, {
           method: "GET",
           credentials: "include", // send cookies
         });

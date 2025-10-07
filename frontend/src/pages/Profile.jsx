@@ -10,6 +10,8 @@ import {
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 const Profile = () => {
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
@@ -20,7 +22,7 @@ const Profile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/auth/profile", {
+        const res = await fetch(`${API_BASE_URL}/api/auth/profile`, {
           credentials: "include",
         });
 
@@ -47,7 +49,7 @@ const Profile = () => {
   const handleEditToggle = () => {
     if (isEditing) {
       // Save profile
-      fetch("http://localhost:5000/api/auth/profile", {
+      fetch(`${API_BASE_URL}/api/auth/profile`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -73,7 +75,7 @@ const Profile = () => {
 
   const handleLogout = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/auth/logout", {
+      const res = await fetch(`${API_BASE_URL}/api/auth/logout`, {
         method: "POST",
         credentials: "include",
       });
