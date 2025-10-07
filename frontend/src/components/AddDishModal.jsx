@@ -1,23 +1,31 @@
 import React from 'react';
-import '../index.css'; // make sure this file contains the animate-fade-in-up CSS
+import { motion } from 'framer-motion';
 
 const AddDishModal = ({ children, onClose }) => {
   return (
-    // Fixed overlay covering the entire viewport
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-20 backdrop-blur-lg">
-      {/* Modal content container with animation */}
-      <div className="bg-white rounded-lg shadow-2xl max-w-lg w-full p-6 mx-4 relative animate-fade-in-up">
-        {/* Close Button */}
+    <motion.div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <motion.div
+        className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 mx-4 relative"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-3xl font-bold leading-none"
-          aria-label="Close"
+          className="absolute top-4 right-4 text-red-500 hover:text-red-600 text-3xl font-bold leading-none focus:outline-none focus:ring-2 focus:ring-red-400"
+          aria-label="Close Modal"
         >
           &times;
         </button>
-        {children} {/* This is where your DishForm will be rendered */}
-      </div>
-    </div>
+        {children}
+      </motion.div>
+    </motion.div>
   );
 };
 

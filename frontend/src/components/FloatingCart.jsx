@@ -1,27 +1,33 @@
-// components/FloatingCart.jsx
 import { useCart } from '../contexts/CartContext';
 import { ShoppingCart } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 const FloatingCart = () => {
   const { cartItems } = useCart();
 
   return (
-    <div className="fixed bottom-5 right-5 z-50">
+    <motion.div
+      className="fixed bottom-4 right-4 z-50"
+      initial={{ scale: 0 }}
+      animate={{ scale: 1 }}
+      transition={{ duration: 0.3 }}
+    >
       <Link to="/cart">
         <button
-          className="relative bg-orange-500 hover:bg-orange-600 text-white p-4 rounded-full shadow-lg transition-transform duration-300 transform hover:scale-110"
+          className="relative bg-red-300 hover:bg-orange-500 text-soft-white p-3 rounded-full shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-warm-orange"
           title="Go to Cart"
+          aria-label={`Go to Cart with ${cartItems.length} items`}
         >
-          <ShoppingCart size={24} />
+          <ShoppingCart size={20} />
           {cartItems.length > 0 && (
-            <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+            <span className="absolute -top-1 -right-1 bg-green-300 text-soft-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
               {cartItems.length}
             </span>
           )}
         </button>
       </Link>
-    </div>
+    </motion.div>
   );
 };
 

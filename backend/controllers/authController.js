@@ -1,62 +1,67 @@
-// backend/controllers/authController.js
 const generateToken = require('../utils/generateToken');
 const User = require('../models/User');
-const admin = require('../config/firebaseAdmin'); // <--- IMPORT FIREBASE ADMIN SDK
+const admin = require('../config/firebaseAdmin');
 
+// Utility: Set JWT in HttpOnly cookie
 const setTokenCookie = (res, user) => {
   const token = generateToken(user);
   res.cookie("token", token, {
     httpOnly: true,
-    secure: true,
-    sameSite: "None", // needed for cross-origin cookies in production
+    secure: true,  
+    // secure: process.env.NODE_ENV === "production"     // Must be false on localhost (no HTTPS)
+    sameSite: "None",    // Required for cross-origin requests to work
+    maxAge: 7 * 24 * 60 * 60 * 1000,
   });
   return token;
 };
 
-// Login
+
+
+
+// Login (email/password)
 exports.loginUser = async (req, res) => {
   const { email, password } = req.body;
-
   try {
-    const user = await User.findOne({ email }).select('+password'); // Ensure password is selected for comparison
-    // console.log('Login attempt for:', email, 'User found:', user ? user.email : 'No'); // Debugging log
-
-    if (!user) {
-        // console.log('User not found for email:', email); // Debug
-        return res.status(401).json({ error: 'Invalid email or password' });
-    }
-
-    // console.log('Comparing passwords...'); // Debug
-    if (await user.matchPassword(password)) {
-      const token = setTokenCookie(res, user);
-      // console.log('Login successful for:', user.email); // Debug
-      return res.json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        token,
-      });
-    } else {
-      // console.log('Password mismatch for email:', email); // Debug
+    const user = await User.findOne({ email }).select('+password');
+    if (!user || !(await user.matchPassword(password))) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
+
+    const token = setTokenCookie(res, user);
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      token,
+    });
   } catch (err) {
     console.error("Login error:", err);
-    return res.status(500).json({ error: 'Login failed due to server error.' });
+    res.status(500).json({ error: 'Login failed due to server error.' });
   }
 };
 
+// Register (email/password)
 exports.registerUser = async (req, res) => {
   const { name, email, password, role } = req.body;
-
   try {
     const userExists = await User.findOne({ email });
-    if (userExists) return res.status(400).json({ error: 'User already exists' });
+    if (userExists) {
+      // Send proper error message
+      return res.status(400).json({ error: 'User already exists with this email' });
+    }
 
-    const user = await User.create({ name, email, password, role });
+    const user = await User.create({
+      name,
+      email,
+      password,
+      role,
+      googleAuth: false,  // explicitly set
+    });
+
     const token = setTokenCookie(res, user);
-    return res.status(201).json({
+
+    res.status(201).json({
       _id: user._id,
       name: user.name,
       email: user.email,
@@ -65,77 +70,41 @@ exports.registerUser = async (req, res) => {
     });
   } catch (err) {
     console.error("Signup error:", err);
-    return res.status(500).json({ error: 'Registration failed' });
+    res.status(500).json({ error: 'Registration failed' });
   }
 };
 
-// NEW: Google Authentication Controller
-exports.googleAuth = async (req, res) => {
-  const { name, email } = req.body; // Firebase sends displayName and email
-
-  try {
-    let user = await User.findOne({ email });
-
-    if (user) {
-      // User exists, log them in
-      // If you want to handle Google-authenticated users differently (e.g., no password)
-      // you might add a flag to the User model, like `user.googleAuth = true;`
-      // and adjust your login logic to allow password-less login for such users.
-      // For now, we'll just log them in and update their name if it changed.
-      user.name = name || user.name; // Update name if provided
-      await user.save(); // Save any updates
-
-      const token = setTokenCookie(res, user);
-      return res.json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        token,
-      });
-    } else {
-      // User does not exist, register them
-      // For Google users, you might not have a traditional password.
-      // You could set a dummy password or mark them with a `googleAuth: true` flag in your User model.
-      // For simplicity, we'll use a placeholder password for now.
-      const newUser = await User.create({
-        name: name,
-        email: email,
-        password: Math.random().toString(36).slice(-8), // Dummy password
-        role: 'customer', // Default role
-        // You might add a 'googleAuth: true' field to your User model here
-      });
-
-      const token = setTokenCookie(res, newUser);
-      return res.status(201).json({
-        _id: newUser._id,
-        name: newUser.name,
-        email: newUser.email,
-        role: newUser.role,
-        token,
-      });
-    }
-  } catch (err) {
-    console.error("Google Auth error:", err);
-    return res.status(500).json({ error: 'Google authentication failed' });
-  }
-};
-
-
+// Get Profile
 exports.getProfile = async (req, res) => {
-  res.json({
-    _id: 'temp_profile_id_456',
-    name: 'Temp Profile User',
-    email: 'profile@example.com',
-    role: 'customer',
-    message: 'This is temporary profile data from getProfile'
-  });
+  try {
+    const userId = req.user?._id;
+
+    if (!userId) {
+      return res.status(401).json({ error: 'Not authorized' });
+    }
+
+    const user = await User.findById(userId).select('-password'); // Exclude password
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    });
+  } catch (err) {
+    console.error('Get profile error:', err);
+    res.status(500).json({ error: 'Failed to fetch profile' });
+  }
 };
 
+// Update Profile
 exports.updateProfile = async (req, res) => {
   const { name, email } = req.body;
-  const user = req.user; // User object from protect middleware
-
+  const user = req.user;
   if (!user) return res.status(401).json({ error: 'Not authorized' });
 
   user.name = name || user.name;
@@ -150,75 +119,70 @@ exports.updateProfile = async (req, res) => {
       role: user.role,
     });
   } catch (err) {
-    console.error(err);
+    console.error("Update profile error:", err);
     res.status(500).json({ error: 'Failed to update profile' });
   }
 };
 
-
+// Logout
 exports.logout = (req, res) => {
-  res.clearCookie('token').json({ message: 'Logged out successfully' });
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+  }).json({ message: 'Logged out successfully' });
 };
 
+
+// Google Auth with Firebase
 exports.googleAuthWithFirebase = async (req, res) => {
-  const { idToken } = req.body; // Expecting the Firebase ID token from the frontend
+  console.log('--- Google Auth Attempt ---');
+  const { idToken } = req.body;
 
   if (!idToken) {
+    console.warn('No ID token received in request body');
     return res.status(400).json({ error: 'Firebase ID token is required' });
   }
 
+  console.log('Received ID token:', idToken);
+
   try {
-    // 1. Verify the Firebase ID token
     const decodedToken = await admin.auth().verifyIdToken(idToken);
-    const { email, name, picture } = decodedToken; // Extract user info from the decoded token
-    const firebaseUid = decodedToken.uid; // Firebase User ID
+    console.log('Decoded Firebase token:', decodedToken);
 
-    // 2. Check if user exists in your MongoDB database
+    const { email, name, uid } = decodedToken;
+
     let user = await User.findOne({ email });
-
-    if (user) {
-      // User exists, update their details if needed (e.g., name, profile picture)
-      user.name = name || user.name;
-      // You might want to update other fields like profile picture URL
-      // user.profilePicture = picture;
-      await user.save(); // Save any updates
-
-      // 3. Generate your own JWT/cookie for your application's session
-      const appToken = setTokenCookie(res, user);
-      return res.json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        token: appToken,
+    if (!user) {
+      console.log('No user found with email, creating new user:', email);
+      user = await User.create({
+        name,
+        email,
+        password: null,
+        role: 'customer',
+        googleAuth: true,
+        firebaseUid: uid,
       });
+      console.log('New user created:', user._id);
     } else {
-      // User does not exist, create a new user in your database
-      // For users authenticated via Google, they don't have a traditional password in your system
-      const newUser = await User.create({
-        name: name,
-        email: email,
-        password: Math.random().toString(36).slice(-10), // Set a dummy/random password (cannot be null)
-        role: 'customer', // Default role for new Google sign-ups
-        googleAuth: true, // You might want to add this flag to your User model
-        firebaseUid: firebaseUid // Store Firebase UID for future reference
-      });
+      console.log('Existing user found:', user._id);
+    }
 
-      const appToken = setTokenCookie(res, newUser);
-      return res.status(201).json({
-        _id: newUser._id,
-        name: newUser.name,
-        email: newUser.email,
-        role: newUser.role,
-        token: appToken,
-      });
-    }
+    const token = setTokenCookie(res, user);
+    console.log('JWT token set in cookie:', token);
+
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      token,
+    });
+
+    console.log('--- Google Auth Success ---');
   } catch (err) {
-    console.error("Firebase ID Token verification or Google Auth error:", err);
-    // Specific error messages for client
-    if (err.code === 'auth/id-token-expired') {
-        return res.status(401).json({ error: 'Google session expired. Please sign in again.' });
-    }
-    return res.status(500).json({ error: 'Google authentication failed.' });
+    console.error('Google Auth error:', err);
+    res.status(500).json({ error: 'Google authentication failed.' });
   }
 };
+
