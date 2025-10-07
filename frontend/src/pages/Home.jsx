@@ -15,7 +15,8 @@ import offer2Img from '../assets/images/fooddeliveryscooter.jpg';
 import supremePizzaImg from '../assets/images/supremepizza.jpg';
 import mobileMockup from '../assets/images/mobileappmockup.jpg';
 import hero from '../assets/video/hero.mp4';
-import avatarImg from '../assets/images/avatar.png'; 
+import avatarImg1 from '../assets/images/avatar.png'; 
+import avatarImg2 from '../assets/images/avatar1.png'; 
 
 const Home = () => {
   const [categories, setCategories] = useState([]);
@@ -50,8 +51,8 @@ const Home = () => {
       { title: 'Free Delivery', description: 'On first order', image: offer2Img },
     ]);
     setTestimonials([
-      { text: 'The food is always fresh and delivered so quickly!', name: 'John Doe', avatar: avatarImg },
-      { text: 'Amazing offers and a seamless ordering experience!', name: 'Jane Smith', avatar: avatarImg },
+      { text: 'The food is always fresh and delivered so quickly!', name: 'John Doe', avatar: avatarImg1 },
+      { text: 'Amazing offers and a seamless ordering experience!', name: 'Jane Smith', avatar: avatarImg2 },
     ]);
 
     const placeholders = ['Search Pizza', 'Search Pasta', 'Search Desserts'];

@@ -4,12 +4,15 @@ import { TypeAnimation } from 'react-type-animation';
 import SmartImage from '../components/SmartImage';
 import teamImg from '../assets/team.png';
 import freshImg from '../assets/fresh.png';
+import avatar1 from '../assets/images/avatar.png';
+import chef from '../assets/images/chef.png';
+import avatar3 from '../assets/images/avatar2.png';
 
 const About = () => {
   const team = [
-    { id: 1, name: 'John Doe', role: 'Founder', image: '/assets/team-john-doe.jpg' },
-    { id: 2, name: 'Jane Smith', role: 'Chef', image: '/assets/team-jane-smith.jpg' },
-    { id: 3, name: 'Alex Brown', role: 'Delivery Manager', image: '/assets/team-alex-brown.jpg' },
+    { id: 1, name: 'John Doe', role: 'Founder', image: avatar1 },
+    { id: 2, name: 'Jane Smith', role: 'Chef', image: chef },
+    { id: 3, name: 'Alex Brown', role: 'Delivery Manager', image: avatar3 },
   ];
   const storyRef = useRef(null);
   const missionRef = useRef(null);

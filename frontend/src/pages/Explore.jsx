@@ -15,6 +15,7 @@ import holiOffer from '../assets/images/holi-offer.jpg';
 import r1 from '../assets/images/restaurant1.jpg';
 import r2 from '../assets/images/restaurant2.jpg';
 import r3 from '../assets/images/restaurant3.jpg';
+import r4 from '../assets/images/restaurant4.jpg';
 
 const Explore = () => {
   const [dishes, setDishes] = useState([
@@ -42,6 +43,7 @@ const Explore = () => {
     { id: 1, name: 'Tasty Bites', image: r1, rating: 4.5 },
     { id: 2, name: 'Spice Haven', image: r2, rating: 4.2 },
     { id: 3, name: 'Burger Bonanza', image: r3, rating: 4.7 },
+    { id: 4, name: 'Delicious Restaurant', image: r4, rating: 4.3 },
   ]);
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -235,7 +237,7 @@ const Explore = () => {
           <div className="text-center mt-8">
             <button
               onClick={() => setShowAllDishes(!showAllDishes)}
-              className="bg-tomato-red text-soft-white font-raleway font-semibold py-2 px-6 rounded-full hover:bg-warm-orange transition-colors duration-300"
+              className="bg-orange-400 text-soft-white font-raleway font-semibold py-2 px-6 rounded-full hover:bg-warm-orange transition-colors duration-300"
             >
               {showAllDishes ? 'Read Less' : 'Read More'}
             </button>
@@ -253,7 +255,7 @@ const Explore = () => {
           Featured Restaurants
         </h2>
         <div className="container mx-auto px-4 flex overflow-x-auto gap-4 py-4">
-          {restaurants.slice(0, 3).map((restaurant) => (
+          {restaurants.slice(0, 4).map((restaurant) => (
             <motion.div
               key={restaurant.id}
               className="min-w-[250px] bg-soft-white rounded-lg shadow-md p-4 text-center hover:scale-105 transition-transform duration-300 animate-pulse-slow"
