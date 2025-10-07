@@ -11,8 +11,8 @@ connectDB(); // 🔌 Connect MongoDB
 const app = express();
 
 const allowedOrigins = [
-  'http://localhost:5173', // Local frontend
-  'https://quickserve-frontend.vercel.app', // Your Vercel frontend
+  process.env.FRONTEND_LOCAL,
+  process.env.FRONTEND_PROD,
 ];
 
 // Middleware
