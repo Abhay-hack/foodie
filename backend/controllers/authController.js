@@ -8,14 +8,11 @@ const setTokenCookie = (res, user) => {
   res.cookie("token", token, {
     httpOnly: true,
     secure: true,  
-    // secure: process.env.NODE_ENV === "production"     // Must be false on localhost (no HTTPS)
-    sameSite: "None",    // Required for cross-origin requests to work
+    sameSite: "None",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
   return token;
 };
-
-
 
 
 // Login (email/password)

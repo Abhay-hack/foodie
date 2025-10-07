@@ -1,18 +1,19 @@
+// backend/server.js
 const express = require('express');
-const dotenv = require('dotenv');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const connectDB = require('./config/db');
 const { notFound, errorHandler } = require('./middlewares/errorHandler');
-const cookieParser = require('cookie-parser');
 
-dotenv.config();
-connectDB(); // 🔌 Connect MongoDB
+// Connect MongoDB
+connectDB();
 
 const app = express();
 
+// Allowed origins (direct values, no .env)
 const allowedOrigins = [
-  process.env.FRONTEND_LOCAL,
-  process.env.FRONTEND_PROD,
+  "http://localhost:5173",
+  "https://foodie-five-dun.vercel.app"
 ];
 
 // Middleware
@@ -21,22 +22,29 @@ app.use(cookieParser());
 // CORS setup
 app.use(cors({
   origin: function (origin, callback) {
-    // allow requests with no origin (like mobile apps or Postman)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = `The CORS policy for this site does not allow access from the specified Origin.`;
-      return callback(new Error(msg), false);
+    if (!origin) return callback(null, true); // allow Postman, server-to-server, mobile apps
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true); // allow request
+    } else {
+      callback(null, false);
     }
-    return callback(null, true);
   },
   credentials: true,
-  methods: ['GET','HEAD','PUT','PATCH','POST','DELETE'],
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
 }));
-
 
 // Body parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Preflight (OPTIONS) requests
+// // Preflight (OPTIONS) requests
+app.options(/.*/, cors({
+  origin: allowedOrigins,
+  credentials: true,
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+}));
+
 
 // Routes
 app.get('/', (req, res) => {
