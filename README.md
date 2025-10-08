@@ -77,6 +77,7 @@ frontend/
 │ ├─ context/ # React Context for state management
 │ ├─ services/ # API request helpers
 │ └─ App.jsx # App entry and routing
+└──.env
 ```
 
 
@@ -112,7 +113,7 @@ frontend/
   JWT_SECRET=your_jwt_secret_key
   FRONTEND_LOCAL=http://localhost:5173
   FRONTEND_PROD=https://your-production-url.com
-  FIREBASE_ADMIN_SDK_JSON={"type": "..."} # JSON for Firebase Admin SDK
+  FIREBASE_ADMIN_SDK_JSON={"type": "..."} 
   ```
 
 
@@ -131,7 +132,20 @@ frontend/
   npm run dev
   ```
 
+## Contributing
+1. We welcome contributions! To contribute:
+2. Fork the repository.
+3. Create a new branch ```git checkout -b feature/your-feature-name```
+4. Make your changes.
+5. Commit your changes ```git commit -m "feat: added new feature" ```
+6. Push to the branch ```git push origin feature/your-feature-name```
+7. Open a Pull Request.
+
+## License
+This project is licensed under the MIT License.
+
+## 🔗 Demo
+You can view a live demo of the project here: [Quickserve](https://foodie-five-dun.vercel.app/).
+
 ## 👤 Author
 This project was created by **Abhay Gupta**. Feel free to connect on [LinkedIn](https://www.linkedin.com/in/abhay-gupta-1257b6248/)
-
-```
